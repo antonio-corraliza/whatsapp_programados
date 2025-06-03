@@ -5,16 +5,64 @@ from tkinter import messagebox
 
 def enviar():
     try:
-        if telefono.get().isdigit() and len(telefono.get()) == 9:
+        if telefono.get().isdigit() and len(telefono.get()) == 9 and len(hora.get() == 4):
             messagebox.showinfo("Mensaje enviado!!!", "Recuerda tener abierta la sesion de WhatsApp en tu Navegador")
             pywhatkit.sendwhatmsg("+34" + telefono.get(), mensage.get("1.0", tk.END), 
-                                int(hora.get()), int(minuto.get()),
+                                int(hora.get()[0:2]), int(hora.get()[2:4]),
                                 wait_time=10, tab_close=True)
         else:
-            messagebox.showinfo("Error...", "Introduce un telefono correcto")                                          
+            messagebox.showerror("Error...", "Introduce un telefono correcto")                                          
     except:
-        messagebox.showinfo("Error...", "Introduce una hora y minutos correctos")
+        messagebox.showerror("Error...", "Introduce una hora y minutos correctos")
 
+def multiple():
+    def añadir():
+        if numeros.get().isdigit() and len(numeros.get()) == 9:
+            lista_num.insert(tk.END, numeros.get())
+            numeros.delete(0, tk.END)
+        else:
+            messagebox.showerror("error...", "Introduce numero valido")
+
+    def envio_multi():
+        try:
+            for numero in lista_num.get():
+                pywhatkit.sendwhatmsg_instantly("+34" + numero, texto_multi.get("1.0", tk.END))
+        except:
+            messagebox.showerror("error", "Algo fallo...")
+    
+    root.destroy()
+    new_root = tk.Tk()
+    new_root.title("Envio multiple")
+    
+    texto_numeros = tk.Label(new_root, text="Ingresa aqui los numeros de telefono")
+    texto_numeros.grid(row=1, column=3)
+
+    numeros = tk.Entry(new_root, width=9)
+    numeros.grid(row=2, column=3)
+    
+    mostrar_num = tk.Button(new_root, text="Ingresar", command=añadir)
+    mostrar_num.grid(row=3, column=3)
+
+    lista_num = tk.Listbox(new_root, height=10, width=10)
+    lista_num.grid(row=4, column=3)
+
+    eliminar = tk.Button(new_root, text="Eliminar",
+                        command=lambda:lista_num.delete(tk.END)                    
+                         )
+    eliminar.grid(row=5, column=3)
+
+    texto_mensaje_mul = tk.Label(new_root, text="Mensaje")
+    texto_mensaje_mul.grid(row=6, column=3)
+
+    texto_multi = tk.Text(new_root, height=10, width=10)
+    texto_multi.grid(row=7, column=3)
+
+    enviar = tk.Button(new_root, text="Envio multiple", command=envio_multi)
+    enviar.grid(row=8, column=3)
+    
+    new_root.mainloop()
+
+    
 root = tk.Tk()
 root.title("WhatsApp Programados")
 
@@ -30,25 +78,22 @@ telefono.grid(row=2, column=3)
 texto_mensaje = tk.Label(root, text="Mensaje")
 texto_mensaje.grid(row=3, column=3)
 
-mensage = tk.Text(root, width=50)
+mensage = tk.Text(root, width=40)
 mensage.grid(row=4, column=3)
 
-texto_hora = tk.Label(root, text="Hora")
+texto_hora = tk.Label(root, text="Ingresa la hora con los minutos")
 texto_hora.grid(row=5, column=3)
 
-hora = tk.Entry(root, width=2)
+hora = tk.Entry(root, width=4)
 hora.grid(row=6, column=3)
 
-texto_minutos = tk.Label(root, text="Minuto")
-texto_minutos.grid(row=7, column=3)
-
-minuto = tk.Entry(root, width=2)
-minuto.grid(row=8, column=3)
-
-enviar = tk.Button(root, text="Enviar", command=enviar,
-                   width=6, height=2
-                   )
+enviar = tk.Button(root, text="Enviar", command=enviar, width=10)
 enviar.grid(row=9, column=3)
 
+texto_multiple = tk.Label(root, text="Tambien puedes enviar multiples mensajes de manera instantanea")
+texto_multiple.grid(row=10, column=3)
+
+boton_multiple = tk.Button(root, text="Envio multiple", command=multiple)
+boton_multiple.grid(row=11, column=3)
 
 root.mainloop()
