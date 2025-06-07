@@ -5,22 +5,54 @@ from tkinter import messagebox, filedialog
 import csv
 
 def max_caracter(P, numero_max):
+    """
+    Valida si la longitud de una cadena P es menor o igual a un número máximo dado.
+
+    Args:
+        P (str): La cadena a verificar.
+        numero_max (str): La longitud máxima permitida como una cadena de texto.
+
+    Returns:
+        bool: True si la longitud de P es menor o igual a numero_max, False en caso contrario.
+    """
     return len(P) <= int(numero_max)
 
 def enviar_mensaje():
+    """
+    Envía un mensaje programado de WhatsApp a un solo destinatario.
+
+    Valida el número de teléfono y la hora ingresados. Si son válidos, muestra un recordatorio
+    para tener WhatsApp Web abierto y luego usa pywhatkit para enviar el mensaje a la
+    hora especificada. Maneja posibles errores con cuadros de mensaje.
+    """
     try:
         if telefono.get().isdigit() and len(telefono.get()) == 9 and len(hora.get()) == 4:
             messagebox.showinfo("Mensaje enviado!!!", "Recuerda tener abierta la sesion de WhatsApp en tu Navegador")
             pywhatkit.sendwhatmsg("+34" + telefono.get(), mensage.get("1.0", tk.END), 
                                 int(hora.get()[0:2]), int(hora.get()[2:]),
-                                wait_time=10, tab_close=True)
+                                wait_time=20, tab_close=True)
         else:
             messagebox.showerror("Error...", "Introduce un telefono correcto")                                          
     except:
         messagebox.showerror("Error...", "Introduce una hora y minutos correctos")
 
 def multiple():
+    """
+    Abre una nueva ventana de Tkinter para enviar mensajes instantáneos de WhatsApp a múltiples destinatarios.
+
+    Esta función gestiona la interfaz de usuario para añadir números de teléfono manualmente o desde un archivo CSV,
+    mostrándolos en un listbox, y luego enviando un mensaje común a todos los números listados
+    de forma instantánea. Incluye funciones para añadir números, cargar desde CSV y enviar.
+    """
     def anadir_archivo():
+        """
+        Abre un cuadro de diálogo de archivo para seleccionar un archivo CSV y añade números de teléfono válidos de este
+        al listbox para el envío de mensajes múltiples.
+
+        Espera que los números de teléfono estén en la última columna del CSV y filtra los
+        números de móvil españoles (que empiezan por '6' o '7') o números internacionales
+        que empiezan por '+34' y luego '6' o '7'.
+        """
         ruta_archivo = filedialog.askopenfilename(title="Seleccione un archivo", 
                                                   filetypes=[("Archivos csv", "*.csv")])
         if ruta_archivo:
@@ -37,6 +69,11 @@ def multiple():
                 messagebox.showerror("Erorr", f"Algo fallo...{e}")
         
     def añadir():
+        """
+        Añade un número de teléfono introducido manualmente al listbox para el envío de mensajes múltiples.
+
+        Valida que el número introducido sea una cadena de 9 dígitos antes de añadirlo.
+        """
         if numeros.get().isdigit() and len(numeros.get()) == 9:
             lista_num.insert(tk.END, numeros.get())
             numeros.delete(0, tk.END)
@@ -44,13 +81,20 @@ def multiple():
             messagebox.showerror("error...", "Introduce numero valido")
 
     def envio_multi():
+        """
+        Envía el mensaje introducido instantáneamente a todos los números de teléfono en el listbox.
+
+        Itera a través de la lista de números y usa pywhatkit para enviar un mensaje instantáneo
+        a cada uno. Maneja posibles errores durante el proceso de envío.
+        """
+        messagebox.showinfo("Mensajes", f"Vas a enviar el mensaje a {len(lista_num.get(0, tk.END))} contactos")
         try:
             for numero in lista_num.get(0, tk.END):
                 pywhatkit.sendwhatmsg_instantly("+34" + numero, texto_multi.get("1.0", tk.END))
         except Exception as e:
             messagebox.showerror("error", f"Algo fallo...{e}")
     
-    root.destroy()
+    root.destroy() # Cierra la ventana principal
     new_root = tk.Tk()
     new_root.title("Envio multiple numeros")
     new_root.geometry("530x840")
