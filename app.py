@@ -3,6 +3,19 @@ import pywhatkit
 import tkinter as tk
 from tkinter import messagebox, filedialog
 import csv
+import sys
+import os
+
+# Función para obtener la ruta absoluta de un archivo de recurso
+def resource_path(relative_path):
+    """ Obtiene la ruta absoluta a un recurso, funciona para desarrollo y para PyInstaller """
+    try:
+        # PyInstaller crea una carpeta temporal y almacena la ruta en _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 def max_caracter(P, numero_max):
     """
@@ -99,7 +112,10 @@ def multiple():
     new_root.title("Envio multiple numeros")
     new_root.geometry("530x840")
     new_root.resizable(False, False)
-    new_root.iconbitmap("WhatsApp.ico")
+    # Usa la función resource_path para el icono
+    icon_path = resource_path("WhatsApp.ico")
+    new_root.iconbitmap(icon_path)
+
     limitador = (new_root.register(max_caracter), "%P", str(numero_caracteres))
      
     texto_numeros = tk.Label(new_root, text="Ingresa aqui los numeros de telefono")
@@ -144,7 +160,9 @@ root = tk.Tk()
 root.title("WhatsApp Programados")
 root.geometry("540x800")
 root.resizable(False, False)
-root.iconbitmap("WhatsApp.ico")
+# Usa la función resource_path para el icono
+icon_path = resource_path("WhatsApp.ico")
+root.iconbitmap(icon_path)
 messagebox.showinfo("Recordatorio","Recuerda mantener abierta tu sesion de WhatsApp en tu navegador!!!")
 numero_caracteres = 9
 limitador = (root.register(max_caracter), "%P", str(numero_caracteres))
